@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>羊洋阳的工作台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.06);
+        }
+
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 280px;
+            background: #fff;
+            border-right: 1px solid #f0f0f0;
+            padding: 32px 20px;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .brand {
+            padding: 0 12px 28px;
+        }
+
+        .brand h1 {
+            font-size: 26px;
+            color: #4a7c3a;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .brand p {
+            font-size: 14px;
+            color: #999;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 18px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #555;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background: #f8f8f8;
+        }
+
+        .nav-item.active {
+            background: #4a7c3a;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(74, 124, 58, 0.28);
+        }
+
+        .nav-item .icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* 右侧内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8f8f8;
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 28px;
+            background: #f8f8f8;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-date {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 28px 28px;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .sync-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 1px solid #d0d0d0;
+            border-radius: 20px;
+            background: #fff;
+            color: #555;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sync-btn:hover {
+            border-color: #4a7c3a;
+            color: #4a7c3a;
+        }
+
+        .sync-hint {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 18px;
+            margin-left: 4px;
+        }
+
+        /* 任务卡片 */
+        .task-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .daily-must {
+            background: #eef6ea;
+            border: 1px solid #d8e8d2;
+        }
+
+        .task-card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #4a7c3a;
+            margin-bottom: 16px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            background: #fff;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .task-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .task-item:hover {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .task-item.completed .task-checkbox {
+            background: #4a7c3a;
+            border-color: #4a7c3a;
+        }
+
+        .task-item.completed .task-checkbox::after {
+            content: '✓';
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-name {
+            font-size: 15px;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        .task-item.completed .task-name {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-expand {
+            cursor: pointer;
+            font-size: 12px;
+            color: #4a7c3a;
+            margin-left: 6px;
+            user-select: none;
+        }
+
+        .task-detail {
+            margin-top: 10px;
+            padding: 12px 14px;
+            background: #f8faf6;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.7;
+            display: none;
+            border-left: 3px solid #4a7c3a;
+        }
+
+        .task-item.expanded .task-detail {
+            display: block;
+        }
+
+        .task-detail ul {
+            margin: 6px 0 0 16px;
+            padding: 0;
+        }
+
+        .task-detail li {
+            margin-bottom: 4px;
+        }
+
+        .task-detail .detail-title {
+            font-weight: 600;
+            color: #4a7c3a;
+            margin-bottom: 4px;
+        }
+
+        .task-tag {
+            display: inline-block;
+            font-size: 11px;
+            color: #4a7c3a;
+            background: rgba(74, 124, 58, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 4px;
+        }
+
+        .task-delete {
+            color: #ccc;
+            cursor: pointer;
+            font-size: 22px;
+            line-height: 1;
+            padding: 4px;
+            transition: color 0.2s;
+        }
+
+        .task-delete:hover {
+            color: #ff5a5a;
+        }
+
+        /* 创作任务区域 */
+        .section-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .section-desc {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 16px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 36px 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* 添加任务表单 */
+        .add-task-form {
+            margin-top: 8px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            margin-bottom: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #4a7c3a;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .form-select {
+            flex: 1;
+            padding: 13px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 26px;
+            background: #4a7c3a;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .add-btn:hover {
+            background: #3d6630;
+        }
+
+        .add-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 页面内容 */
+        .page-content {
+            display: none;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* 灵感卡片 */
+        .idea-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 14px;
+            border-left: 4px solid #4a7c3a;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .idea-card h4 {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .idea-card p {
+            font-size: 13px;
+            color: #777;
+            line-height: 1.6;
+        }
+
+        .idea-tag {
+            display: inline-block;
+            font-size: 11px;
+            color: #fff;
+            background: #4a7c3a;
+            padding: 3px 8px;
+            border-radius: 8px;
+            margin-top: 8px;
+            margin-right: 6px;
+        }
+
+        /* 热点列表 */
+        .hot-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: #fff;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+        }
+
+        .hot-rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .hot-rank.top {
+            background: #4a7c3a;
+            color: #fff;
+        }
+
+        .hot-info {
+            flex: 1;
+        }
+
+        .hot-title {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .hot-meta {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .hot-action {
+            font-size: 12px;
+            color: #4a7c3a;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .hot-suggestions {
+            margin-top: 8px;
+            padding: 10px 12px;
+            background: #f8faf6;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #555;
+            line-height: 1.6;
+            display: none;
+            border-left: 3px solid #4a7c3a;
+        }
+
+        .hot-item.expanded .hot-suggestions {
+            display: block;
+        }
+
+        .hot-suggestions ul {
+            margin: 4px 0 0 14px;
+        }
+
+        .hot-tag-music {
+            display: inline-block;
+            font-size: 10px;
+            color: #fff;
+            background: #ff6b6b;
+            padding: 2px 6px;
+            border-radius: 6px;
+            margin-left: 6px;
+        }
+
+        .hot-search-link {
+            font-size: 11px;
+            color: #4a7c3a;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        .hot-search-link:hover {
+            text-decoration: underline;
+        }
+
+        /* 复盘表单 */
+        .review-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .review-textarea:focus {
+            border-color: #4a7c3a;
+        }
+
+        .save-btn {
+            margin-top: 12px;
+            padding: 10px 22px;
+            background: #4a7c3a;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .save-btn:hover {
+            background: #3d6630;
+        }
+
+        .saved-note {
+            margin-top: 12px;
+            padding: 12px;
+            background: #f8f8f8;
+            border-radius: 10px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e8dd;
+            border-radius: 3px;
+            margin-top: 14px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4a7c3a;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .container {
+                position: relative;
+            }
+
+            .sidebar {
+                position: absolute;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                z-index: 100;
+                transition: left 0.3s ease;
+                box-shadow: none;
+            }
+
+            .sidebar.open {
+                left: 0;
+                box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 99;
+            }
+
+            .overlay.show {
+                display: block;
+            }
+
+            .content-area {
+                padding: 0 16px 20px;
+            }
+
+            .header {
+                padding: 16px;
+            }
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d0d0d0;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b0b0b0;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    <div class="container">
+        <!-- 左侧导航 -->
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <h1>羊洋阳</h1>
+                <p>创作工作台</p>
+            </div>
+            <nav class="nav-menu">
+                <div class="nav-item active" data-page="daily">
+                    <span class="icon">📋</span>
+                    <span>每日计划</span>
+                </div>
+                <div class="nav-item" data-page="inspiration">
+                    <span class="icon">💡</span>
+                    <span>选题每日灵感</span>
+                </div>
+                <div class="nav-item" data-page="hot">
+                    <span class="icon">🔥</span>
+                    <span>爆款热点视频/二创</span>
+                </div>
+                <div class="nav-item" data-page="review">
+                    <span class="icon">📊</span>
+                    <span>内容复盘</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- 右侧内容 -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <span class="menu-toggle" id="menuToggle">☰</span>
+                    <h2 id="pageTitle">每日计划</h2>
+                </div>
+                <div class="header-date" id="currentDate"></div>
+            </header>
+
+            <div class="content-area">
+                <!-- 每日计划页面 -->
+                <div class="page-content active" id="page-daily">
+                    <div class="top-actions">
+                        <button class="sync-btn" onclick="alert('已同步到手机')">
+                            <span>🔄</span>
+                            <span>同步到手机</span>
+                        </button>
+                    </div>
+                    <div class="sync-hint">完成一项打勾，进度一目了然</div>
+
+                    <!-- 每日必做 -->
+                    <div class="task-card daily-must">
+                        <div class="task-card-title">每日必做 <span style="font-size:12px;color:#888;font-weight:normal;" id="todayLabel"></span></div>
+                        <div id="dailyTasks"></div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">0/0 完成</div>
+                    </div>
+
+                    <!-- 创作任务 -->
+                    <div class="task-card">
+                        <div class="section-title">创作任务</div>
+                        <div class="section-desc">内容拍摄、运营、复盘。</div>
+                        <div id="creativeTasks">
+                            <div class="empty-state">暂无任务，下方添加 ↓</div>
+                        </div>
+                    </div>
+
+                    <!-- 添加新任务 -->
+                    <div class="task-card">
+                        <div class="section-title">添加新任务</div>
+                        <form class="add-task-form" id="addTaskForm">
+                            <label class="form-label">任务内容</label>
+                            <input type="text" class="form-input" id="taskInput" placeholder="例如：拍一条唱歌视频 / 学习剪辑" required>
+                            <div class="form-row">
+                                <select class="form-select" id="taskCategory">
+                                    <option value="daily">每日必做</option>
+                                    <option value="creative">创作任务</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="add-btn">
+                                <span>+</span>
+                                <span>添加任务</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 选题灵感页面 -->
+                <div class="page-content" id="page-inspiration">
+                    <div class="task-card">
+                        <div class="section-title">今日选题灵感</div>
+                        <div class="section-desc">为无声卡清唱、温柔男声风格定制的选题方向。</div>
+
+                        <div class="idea-card">
+                            <h4>🎵 热门歌曲温柔版改编</h4>
+                            <p>把近期抖音热榜上的快节奏歌曲改成慢板吉他/钢琴版本，突出清澈男声，标题带「温柔版」「无声卡清唱」。</p>
+                            <span class="idea-tag">易火</span>
+                            <span class="idea-tag">低制作成本</span>
+                        </div>
+
+                        <div class="idea-card">
+                            <h4>💬 评论区点歌挑战</h4>
+                            <p>从上条视频的评论区挑 3 条粉丝点歌，做成「宠粉系列」，结尾预告下期选中的评论，提高互动率。</p>
+                            <span class="idea-tag">宠粉</span>
+                            <span class="idea-tag">提升评论</span>
+                        </div>
+
+                        <div class="idea-card">
+                            <h4>🎬 电影/OST回忆杀</h4>
+                            <p>翻唱经典影视ost或青春回忆金曲，配合歌词屏显+场景氛围，打「怀旧」「睡前听」标签。</p>
+                            <span class="idea-tag">情怀</span>
+                            <span class="idea-tag">完播率高</span>
+                        </div>
+
+                        <div class="idea-card">
+                            <h4>🎤 一句封神系列</h4>
+                            <p>只唱一首歌最抓耳的 15-30 秒高潮部分，封面大字突出歌名，适合抖音竖屏快速传播。</p>
+                            <span class="idea-tag">短平快</span>
+                            <span class="idea-tag">适合首发</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 爆款热点/二创页面 -->
+                <div class="page-content" id="page-hot">
+                    <div class="task-card">
+                        <div class="section-title">🔥 抖音实时热榜 & 二创建议</div>
+                        <div class="section-desc" id="hotDesc">正在加载热点数据...</div>
+                        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                            <button class="add-btn" onclick="loadHotData()" style="padding:8px 16px;font-size:13px;">🔄 刷新热点</button>
+                            <span id="hotUpdateTime" style="font-size:12px;color:#999;align-self:center;"></span>
+                        </div>
+                        <div id="hotList"></div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="section-title">🚀 上升热点（新发酵，适合抢先跟）</div>
+                        <div class="section-desc">刚冒头的热点，第一时间跟拍容易吃到流量。</div>
+                        <div id="trendingList"></div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="section-title">我的二创灵感池</div>
+                        <div class="section-desc">看到好点子先记下来，防止灵感流失。</div>
+                        <form id="ideaForm">
+                            <input type="text" class="form-input" id="ideaInput" placeholder="例如：把《xxx》改成温柔吉他版" required>
+                            <button type="submit" class="add-btn">+ 添加灵感</button>
+                        </form>
+                        <div id="ideaList" style="margin-top: 16px;"></div>
+                    </div>
+                </div>
+
+                <!-- 内容复盘页面 -->
+                <div class="page-content" id="page-review">
+                    <div class="task-card">
+                        <div class="section-title">📊 内容复盘</div>
+                        <div class="section-desc">记录每天的数据和感受，持续优化内容。</div>
+
+                        <div class="idea-card">
+                            <h4>今日复盘问题</h4>
+                            <p>1. 今天发布作品的播放量/点赞/评论是多少？<br>2. 哪一类封面或标题效果最好？<br>3. 明天可以改进的一个小点是什么？</p>
+                        </div>
+
+                        <textarea class="review-textarea" id="reviewText" placeholder="写下今天的复盘..."></textarea>
+                        <button class="save-btn" onclick="saveReview()">保存复盘</button>
+                        <div id="reviewList"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 初始每日任务模板（打卡状态按天保存，见下方逻辑）
+
+        let ideas = JSON.parse(localStorage.getItem('yyideas') || '[]');
+        let reviews = JSON.parse(localStorage.getItem('yyreviews') || '[]');
+
+        // ===== 按天保存打卡状态 =====
+        // 任务模板（固定，不含打卡状态）
+        const taskTemplates = [
+            {
+                id: 1, name: '抖音发布一个唱歌作品', category: 'daily', tag: '每日必做',
+                detail: '<div class="detail-title">今日任务</div><ul><li>选题：从「爆款热点/二创」页选 1 首热歌</li><li>拍摄：无声卡清唱 / 楼道混响版，竖屏 30-60 秒</li><li>发布：带 3 个话题（#无声卡清唱 #翻唱 #歌名）</li><li>发布后 1 小时内回复前 10 条评论</li></ul>'
+            },
+            {
+                id: 2, name: '每天健身1小时', category: 'daily', tag: '每日必做',
+                detail: '<div class="detail-title">今日训练</div><ul><li>热身 10 分钟（开合跳 / 高抬腿）</li><li>力量 30 分钟（胸+三头 / 背+二头 / 腿 臀 轮换）</li><li>有氧 15 分钟（慢跑或跳绳）</li><li>拉伸 5 分钟</li></ul>'
+            },
+            {
+                id: 3, name: '英语练习30分钟', category: 'daily', tag: '每日必做',
+                detail: '<div class="detail-title">今日英语（按星期轮换）</div><ul><li>周一/四：背 20 个高频词 + 造句</li><li>周二/五：跟读 1 段英文短视频（影子跟读法）</li><li>周三/六：看 1 集《老友记》双语字幕，摘抄 5 句</li><li>周日：复习本周笔记 + 自言自语录 1 段</li></ul><div class="detail-title" style="margin-top:8px">今日推荐资源</div><ul><li>App：百词斩 / 不背单词</li><li>跟读：YouTube「Rachel\'s English」</li><li>播客：6 Minute English（BBC）</li></ul>'
+            },
+            {
+                id: 4, name: '做电商知识1小时', category: 'daily', tag: '每日必做',
+                detail: '<div class="detail-title">今日学习</div><ul><li>选品逻辑 / 爆品拆解 30 分钟</li><li>店铺数据复盘 15 分钟（访客、转化、退款率）</li><li>记录 3 条行业要点到备忘录 15 分钟</li></ul>'
+            }
+        ];
+
+        // 获取今日日期 key
+        function getTodayKey() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        // 读取今日打卡状态 { taskId: true/false }
+        function getTodayChecks() {
+            const key = 'yychecks_' + getTodayKey();
+            return JSON.parse(localStorage.getItem(key) || '{}');
+        }
+
+        // 保存今日打卡状态
+        function saveTodayChecks(checks) {
+            const key = 'yychecks_' + getTodayKey();
+            localStorage.setItem(key, JSON.stringify(checks));
+        }
+
+        // 读取用户自定义任务（跨天保留）
+        function getCustomTasks() {
+            return JSON.parse(localStorage.getItem('yycustomTasks') || '[]');
+        }
+
+        function saveCustomTasks(custom) {
+            localStorage.setItem('yycustomTasks', JSON.stringify(custom));
+        }
+
+        // 组装当前 tasks：模板 + 自定义，打卡状态从今日记录读取
+        let tasks = [];
+        let todayChecks = {};
+
+        function loadTasks() {
+            todayChecks = getTodayChecks();
+            const custom = getCustomTasks();
+            // 模板任务：completed 来自今日打卡
+            tasks = taskTemplates.map(t => ({
+                ...t,
+                completed: !!todayChecks[t.id]
+            }));
+            // 自定义任务（daily 和 creative 都放这里）
+            custom.forEach(t => {
+                tasks.push({
+                    ...t,
+                    completed: !!todayChecks[t.id]
+                });
+            });
+        }
+
+        const dailyTasksEl = document.getElementById('dailyTasks');
+        const creativeTasksEl = document.getElementById('creativeTasks');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+
+        function render() {
+            const dailyTasks = tasks.filter(t => t.category === 'daily');
+            const creativeTasks = tasks.filter(t => t.category === 'creative');
+
+            dailyTasksEl.innerHTML = dailyTasks.length ? dailyTasks.map(task => `
+                <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
+                    <div class="task-checkbox" onclick="event.stopPropagation();toggleTask(${task.id})"></div>
+                    <div class="task-content" onclick="toggleExpand(${task.id})">
+                        <div class="task-name">${task.name}<span class="task-expand">${tasks.find(t=>t.id===task.id) && task.detail ? ' ▾ 详情' : ''}</span></div>
+                        <span class="task-tag">${task.tag}</span>
+                        ${task.detail ? `<div class="task-detail">${task.detail}</div>` : ''}
+                    </div>
+                    <div class="task-delete" onclick="event.stopPropagation();deleteTask(${task.id})">×</div>
+                </div>
+            `).join('') : '<div class="empty-state">暂无每日任务</div>';
+
+            creativeTasksEl.innerHTML = creativeTasks.length ? creativeTasks.map(task => `
+                <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
+                    <div class="task-checkbox" onclick="event.stopPropagation();toggleTask(${task.id})"></div>
+                    <div class="task-content" onclick="toggleExpand(${task.id})">
+                        <div class="task-name">${task.name}</div>
+                        ${task.detail ? `<div class="task-detail">${task.detail}</div>` : ''}
+                    </div>
+                    <div class="task-delete" onclick="event.stopPropagation();deleteTask(${task.id})">×</div>
+                </div>
+            `).join('') : '<div class="empty-state">暂无任务，下方添加 ↓</div>';
+
+            const completed = dailyTasks.filter(t => t.completed).length;
+            const total = dailyTasks.length;
+            const percent = total ? (completed / total) * 100 : 0;
+            progressFill.style.width = percent + '%';
+            progressText.textContent = `${completed}/${total} 完成`;
+        }
+
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                todayChecks[id] = task.completed;
+                saveTodayChecks(todayChecks);
+                render();
+            }
+        }
+
+        function deleteTask(id) {
+            // 模板任务不能删，只能删自定义任务
+            const isTemplate = taskTemplates.some(t => t.id === id);
+            if (isTemplate) {
+                alert('这是每日固定任务，无法删除（可以不勾选）');
+                return;
+            }
+            const custom = getCustomTasks().filter(t => t.id !== id);
+            saveCustomTasks(custom);
+            // 清除今日打卡
+            delete todayChecks[id];
+            saveTodayChecks(todayChecks);
+            loadTasks();
+            render();
+        }
+
+        function toggleExpand(id) {
+            const el = document.querySelector(`.task-item[data-id="${id}"]`);
+            if (el) el.classList.toggle('expanded');
+        }
+
+        document.getElementById('addTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('taskInput');
+            const category = document.getElementById('taskCategory').value;
+            const name = input.value.trim();
+            if (!name) return;
+
+            const newTask = {
+                id: Date.now(),
+                name: name,
+                category: category,
+                tag: category === 'daily' ? '每日必做' : ''
+            };
+            const custom = getCustomTasks();
+            custom.push(newTask);
+            saveCustomTasks(custom);
+            input.value = '';
+            loadTasks();
+            render();
+        });
+
+        // 日期显示
+        function updateDate() {
+            const now = new Date();
+            const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${weekDays[now.getDay()]}`;
+            document.getElementById('currentDate').textContent = dateStr;
+            const label = document.getElementById('todayLabel');
+            if (label) label.textContent = `· ${now.getMonth() + 1}月${now.getDate()}日 打卡`;
+        }
+
+        // 页面切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+
+                const page = this.dataset.page;
+                document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+                document.getElementById('page-' + page).classList.add('active');
+                document.getElementById('pageTitle').textContent = this.querySelector('span:last-child').textContent;
+
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('show');
+                }
+            });
+        });
+
+        // 移动端侧边栏
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        });
+
+        // ===== 抖音热点自动加载 =====
+        async function loadHotData() {
+            const hotListEl = document.getElementById('hotList');
+            const trendingListEl = document.getElementById('trendingList');
+            const descEl = document.getElementById('hotDesc');
+            const timeEl = document.getElementById('hotUpdateTime');
+
+            hotListEl.innerHTML = '<div class="empty-state">正在抓取抖音热榜...</div>';
+            trendingListEl.innerHTML = '';
+
+            try {
+                // 读取本地 hot_data.json（由 fetch_hot.py 生成）
+                const resp = await fetch('hot_data.json?t=' + Date.now());
+                if (!resp.ok) throw new Error('未找到热点数据');
+                const data = await resp.json();
+
+                timeEl.textContent = '更新于 ' + data.update_time;
+                descEl.textContent = `共 ${data.total_count} 条热点，其中 ${data.music_related_count} 条与音乐/翻唱相关，已为你标注二创建议。`;
+
+                // 渲染热搜榜
+                hotListEl.innerHTML = data.hot_list.map(item => `
+                    <div class="hot-item" onclick="toggleHotExpand(this)">
+                        <div class="hot-rank ${item.rank <= 3 ? 'top' : ''}">${item.rank}</div>
+                        <div class="hot-info">
+                            <div class="hot-title">
+                                ${item.word}
+                                ${item.music_related ? '<span class="hot-tag-music">音乐相关</span>' : ''}
+                                <a class="hot-search-link" href="${item.search_url}" target="_blank" onclick="event.stopPropagation()">搜抖音 →</a>
+                            </div>
+                            <div class="hot-meta">热度 ${item.hot_label}${item.music_related ? ' · 适合二创' : ''}</div>
+                            <div class="hot-suggestions">
+                                <strong>二创建议：</strong>
+                                <ul>${item.suggestions.map(s => `<li>${s}</li>`).join('')}</ul>
+                                <button class="add-btn" style="padding:6px 14px;font-size:12px;margin-top:6px;" onclick="event.stopPropagation();useIdea('跟热点：${item.word}')">+ 加入灵感池</button>
+                            </div>
+                        </div>
+                        <div class="hot-action">▾ 展开</div>
+                    </div>
+                `).join('');
+
+                // 渲染上升热点
+                if (data.trending_list && data.trending_list.length) {
+                    trendingListEl.innerHTML = data.trending_list.map(item => `
+                        <div class="hot-item" onclick="toggleHotExpand(this)">
+                            <div class="hot-rank ${item.rank <= 3 ? 'top' : ''}">${item.rank}</div>
+                            <div class="hot-info">
+                                <div class="hot-title">
+                                    ${item.word}
+                                    ${item.music_related ? '<span class="hot-tag-music">音乐相关</span>' : ''}
+                                    <a class="hot-search-link" href="${item.search_url}" target="_blank" onclick="event.stopPropagation()">搜抖音 →</a>
+                                </div>
+                                <div class="hot-meta">视频数 ${item.video_count}${item.music_related ? ' · 适合二创' : ''}</div>
+                                <div class="hot-suggestions">
+                                    <strong>二创建议：</strong>
+                                    <ul>${item.suggestions.map(s => `<li>${s}</li>`).join('')}</ul>
+                                    <button class="add-btn" style="padding:6px 14px;font-size:12px;margin-top:6px;" onclick="event.stopPropagation();useIdea('跟上升热点：${item.word}')">+ 加入灵感池</button>
+                                </div>
+                            </div>
+                            <div class="hot-action">▾ 展开</div>
+                        </div>
+                    `).join('');
+                } else {
+                    trendingListEl.innerHTML = '<div class="empty-state">暂无上升热点</div>';
+                }
+            } catch (e) {
+                hotListEl.innerHTML = `
+                    <div class="empty-state">
+                        暂无热点数据。<br>
+                        请先运行抓取脚本：<br>
+                        <code style="background:#f0f0f0;padding:6px 10px;border-radius:6px;display:inline-block;margin-top:8px;">python3 fetch_hot.py</code>
+                    </div>
+                `;
+                descEl.textContent = '未加载到数据，请先运行抓取脚本。';
+            }
+        }
+
+        function toggleHotExpand(el) {
+            el.classList.toggle('expanded');
+            const action = el.querySelector('.hot-action');
+            if (action) action.textContent = el.classList.contains('expanded') ? '▴ 收起' : '▾ 展开';
+        }
+
+        // 切换到热点页时自动加载
+        document.querySelector('.nav-item[data-page="hot"]').addEventListener('click', loadHotData);
+
+        // 灵感池
+        function renderIdeas() {
+            const list = document.getElementById('ideaList');
+            list.innerHTML = ideas.length ? ideas.map((idea, idx) => `
+                <div class="task-item">
+                    <div class="task-content">
+                        <div class="task-name">${idea}</div>
+                    </div>
+                    <div class="task-delete" onclick="deleteIdea(${idx})">×</div>
+                </div>
+            `).join('') : '<div class="empty-state">还没有灵感，快去添加吧</div>';
+        }
+
+        function useIdea(text) {
+            ideas.unshift(text);
+            localStorage.setItem('yyideas', JSON.stringify(ideas));
+            renderIdeas();
+            alert('已添加到灵感池：' + text);
+        }
+
+        function deleteIdea(idx) {
+            ideas.splice(idx, 1);
+            localStorage.setItem('yyideas', JSON.stringify(ideas));
+            renderIdeas();
+        }
+
+        document.getElementById('ideaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('ideaInput');
+            const val = input.value.trim();
+            if (!val) return;
+            ideas.unshift(val);
+            localStorage.setItem('yyideas', JSON.stringify(ideas));
+            input.value = '';
+            renderIdeas();
+        });
+
+        // 复盘
+        function saveReview() {
+            const text = document.getElementById('reviewText').value.trim();
+            if (!text) return alert('请先写点什么');
+            const now = new Date();
+            const timeStr = `${now.getMonth() + 1}月${now.getDate()}日`;
+            reviews.unshift({ time: timeStr, text: text });
+            localStorage.setItem('yyreviews', JSON.stringify(reviews));
+            document.getElementById('reviewText').value = '';
+            renderReviews();
+        }
+
+        function renderReviews() {
+            const list = document.getElementById('reviewList');
+            list.innerHTML = reviews.map(r => `
+                <div class="saved-note">
+                    <strong>${r.time}</strong><br>
+                    ${r.text.replace(/\n/g, '<br>')}
+                </div>
+            `).join('');
+        }
+
+        // 初始化
+        updateDate();
+        loadTasks();   // 按天加载打卡状态
+        render();
+        renderIdeas();
+        renderReviews();
+    </script>
+</body>
+</html>
